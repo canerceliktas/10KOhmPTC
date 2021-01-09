@@ -1,52 +1,3 @@
-/**
- * Copyright (c) 2014 - 2018, Nordic Semiconductor ASA
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- *
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- *
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- *
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-/** @file
- * @defgroup nrf_adc_example main.c
- * @{
- * @ingroup nrf_adc_example
- * @brief ADC Example Application main file.
- *
- * This file contains the source code for a sample application using ADC.
- *
- * @image html example_board_setup_a.jpg "Use board setup A for this example."
- */
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -90,6 +41,7 @@ static uint32_t              m_adc_evt_counter;
 /* When UART is used for communication with the host do not use flow control.*/
 #define UART_HWFC APP_UART_FLOW_CONTROL_DISABLED
 
+//UART Error Handle
 void uart_error_handle(app_uart_evt_t * p_event)
 {
     if (p_event->evt_type == APP_UART_COMMUNICATION_ERROR)
@@ -135,7 +87,7 @@ void uart_configuration(void)
 
 void timer_handler(nrf_timer_event_t event_type, void * p_context)
 {
-  
+  //we already use ppi to connect adc and timer event. so this would be empty
 }
 
 
@@ -151,7 +103,7 @@ void saadc_sampling_event_init(void)
     err_code = nrf_drv_timer_init(&m_timer, &timer_cfg, timer_handler);
     APP_ERROR_CHECK(err_code);
 
-    /* 400ms de bir timer compare event i gerçekleþtiðinde SAADC sample alacak */
+    /* 400ms de bir timer compare event i gerÃ§ekleÃ¾tiÃ°inde SAADC sample alacak */
     uint32_t ticks = nrf_drv_timer_ms_to_ticks(&m_timer, 400);
     nrf_drv_timer_extended_compare(&m_timer,
                                    NRF_TIMER_CC_CHANNEL0,
@@ -168,7 +120,7 @@ void saadc_sampling_event_init(void)
     err_code = nrf_drv_ppi_channel_alloc(&m_ppi_channel);
     APP_ERROR_CHECK(err_code);
 
-    /*timer compare eventi ile saadc sample alma task ýný birbirine baðlýyoruz*/
+    /*timer compare eventi ile saadc sample alma task Ã½nÃ½ birbirine baÃ°lÃ½yoruz*/
     err_code = nrf_drv_ppi_channel_assign(m_ppi_channel,
                                           timer_compare_event_addr,
                                           saadc_sample_task_addr);
@@ -197,7 +149,7 @@ void saadc_callback(nrf_drv_saadc_evt_t const * p_event)
         for (i = 0; i < SAMPLES_IN_BUFFER; i++)
         {   
 
-            /*Buffer'daki adc datasýný uart hattýna aktar (Byte olarak koyduðu için seri portta karþýlýk olan ASCII karakteri gözüküyor)*/
+            /*Buffer'daki adc datasÃ½nÃ½ uart hattÃ½na aktar (Byte olarak koyduÃ°u iÃ§in seri portta karÃ¾Ã½lÃ½k olan ASCII karakteri gÃ¶zÃ¼kÃ¼yor)*/
             app_uart_put(&p_event->data.done.p_buffer[i]);
         }
         m_adc_evt_counter++;
